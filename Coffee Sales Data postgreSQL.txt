@@ -1,0 +1,81 @@
+Project Title: SQL Data Analysis for Coffee Sales
+
+Project Description:
+In this project, I will apply my SQL skills to analyze the "coffee_data" database,
+which contains information related to coffee sales, customers, and staff.
+The project will cover data retrieval, filtering, aggregation, and data joining, aligning with the syllabus you provided.
+
+Project Objectives:
+Apply SQL queries for data retrieval and analysis.
+Gain practical experience in using SQL for real-world data analysis.
+Develop an understanding of SQL data manipulation techniques.
+Combine data from multiple tables using SQL joins.
+
+
+--How many products are available in the database
+
+SELECT COUNT(DISTINCT product_name) AS num_product
+FROM product
+
+--Can you list all products with prices above $20
+
+SELECT product_name, price
+FROM product
+WHERE price >20
+
+--How many customers have registered with your coffee business
+
+SELECT COUNT(registration_date)
+FROM customer
+
+--What is the total number of sales transactions in the database
+
+SELECT COUNT(transaction_id)
+FROM sales_transaction
+
+-Find products with descriptions that contain specific keywords ("organic" or "peppermint" or “Cappuccino”).
+
+SELECT *
+FROM product
+WHERE product_name ILIKE '%organic%' 
+	OR product_name ILIKE '%peppermint%' 
+	OR product_name ILIKE '%Cappuccino%'
+
+--Identify the top-selling products in terms of quantity sold.
+
+SELECT product.product_name, product.product_id, COUNT(quantity)
+FROM sales_detail AS sales
+LEFT JOIN product
+	ON sales.product_id = product.product_id
+GROUP BY product.product_id, product.product_name
+ORDER BY count DESC 
+LIMIT 10
+
+--What is the total quantity sold for the “Civet Cat” product
+
+SELECT product.product_name,SUM(quantity) AS civet_cat_tatal
+FROM sales_detail AS sales
+LEFT JOIN product
+	ON sales.product_id = product.product_id
+WHERE product_name = 'Civet Cat'
+GROUP BY product.product_name
+
+--Determine the total sales quantity and revenue generated from the "English Breakfast" product
+
+SELECT product.product_name,SUM(quantity) AS english_breakfast_tatal,
+SUM(sales.price) as price
+FROM sales_detail AS sales
+LEFT JOIN product
+	ON sales.product_id = product.product_id
+WHERE product_name = 'English Breakfast'
+GROUP BY product.product_name
+
+--How many staff members work in the outlet "224 E 57th Street, New York"
+
+SELECT street_address, city, COUNT(staff_id)
+FROM sales_outlet AS sales
+	INNER JOIN staff 
+	ON sales.outlet_id = staff.staff_id
+WHERE street_address = '224 E 57th Street'
+	AND city = 'New York'
+GROUP BY street_address, city
